@@ -4,6 +4,7 @@
   <groupId>com.ahex.match</groupId>
   <artifactId>ahex-cricket-match</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <name>ahex-cricket-match Maven Webapp</name>
   <packaging>war</packaging>
   <properties>
     <failOnMissingWebXml>false</failOnMissingWebXml>
@@ -74,6 +75,7 @@
 
   </dependencies>
   <build>
+  <finalName>ahex-cricket-match</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -90,7 +92,10 @@
         <artifactId>tomcat7-maven-plugin</artifactId>
         <version>2.2</version>
         <configuration>
-          <path>/</path>
+          <!-- <path>/</path> -->
+          <warSourceDirectory>src/main/webapp</warSourceDirectory>
+		  <warName>ahex-cricket-match</warName>
+		  <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
     </plugins>

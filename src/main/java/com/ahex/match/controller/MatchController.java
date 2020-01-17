@@ -79,7 +79,7 @@ public class MatchController {
 	
 /*	@RequestMapping(value="postTeamInfo", method = RequestMethod.POST , produces = { "application/json; charset=UTF-8" }, consumes = {"application/json; charset=UTF-8" }  )
 */
-	@PostMapping(value="teamInfo" , produces = { "application/json; charset=UTF-8" }, 
+	@PostMapping(value="/teamInfo" , produces = { "application/json; charset=UTF-8" }, 
 			consumes = {"application/json; charset=UTF-8" } )
 	public ResponseEntity<FinalDto> getTeamInfo(@RequestBody FilterDto filterDto ,  @RequestParam (required=false) String year, @RequestParam(required=false) String teamName){
 		FinalDto result = matchService.getTeamInfo(filterDto, year,teamName);
@@ -88,7 +88,7 @@ public class MatchController {
 	}
 	
 	//@PostMapping("/getMatchInfo")
-		@PostMapping(value="matchInfo" , produces = { "application/json; charset=UTF-8" }, 
+		@PostMapping(value="/matchInfo" , produces = { "application/json; charset=UTF-8" }, 
 				consumes = {"application/json; charset=UTF-8" } )
 		//public ResponseEntity<FinalDto> getMatchInfo(@RequestParam(required= true) String filterType, @RequestParam(required = true) String filterValue){
 		public ResponseEntity<FinalDto> getMatchInfo(@RequestBody FilterDto filterDto, @RequestParam(required = false) String filterType, @RequestParam(required = false) String filterValue){	
