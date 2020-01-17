@@ -31,7 +31,8 @@ public class InfEntity {
 	private String dates;
 	private String gender;
 	private String match_type;
-	private int neutral_venue;
+	@Column(nullable = true)
+	private Long neutral_venue;
 	
 	/*@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "match_outcome_id", referencedColumnName = "match_info_outcome_id")
@@ -44,6 +45,7 @@ public class InfEntity {
 	private String out_come_method;
 	
 	private String overs;
+	@Column(nullable = true)
 	private String player_of_match;
 	private String teams;
 	
@@ -182,10 +184,10 @@ public class InfEntity {
 		this.out_come_method = out_come_method;
 	}
 	
-	public int getNeutral_venue() {
+	public Long getNeutral_venue() {
 		return neutral_venue;
 	}
-	public void setNeutral_venue(int neutral_venue) {
+	public void setNeutral_venue(Long neutral_venue) {
 		this.neutral_venue = neutral_venue;
 	}
 	@Override

@@ -21,7 +21,7 @@ public class Inf {
 	private Map<String,String> toss;
 	private List<String> umpires;
 	private String venue;
-	private int neutral_venue;
+	private Long neutral_venue;
 	/*private List<InningEntity> innings;*/
 	
 
@@ -107,10 +107,10 @@ public class Inf {
 		this.outcome = outcome;
 	}
 	
-	public int getNeutral_venue() {
+	public Long getNeutral_venue() {
 		return neutral_venue;
 	}
-	public void setNeutral_venue(int neutral_venue) {
+	public void setNeutral_venue(Long neutral_venue) {
 		this.neutral_venue = neutral_venue;
 	}
 	@Override

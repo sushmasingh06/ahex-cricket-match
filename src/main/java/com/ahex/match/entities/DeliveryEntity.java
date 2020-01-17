@@ -38,10 +38,14 @@ import javax.persistence.Table;
     @JoinColumn(name = "delivery_runs_Id", referencedColumnName = "id")
 	private RunEntity runs;*/
 	
-	private Integer run_batsman;
-	private Integer run_extras;
-	private Integer run_total;
-	private Integer run_non_boundary;
+	@Column(nullable = true)
+	private Long run_batsman;
+	@Column(nullable = true)
+	private Long run_extras;
+	@Column(nullable = true)
+	private Long run_total;
+	@Column(nullable = true)
+	private Long run_non_boundary;
 	
 	/*@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_wicket_id", referencedColumnName = "id")
@@ -91,27 +95,27 @@ import javax.persistence.Table;
 		this.non_striker = non_striker;
 	}
 
-	public Integer getRun_batsman() {
+	public Long getRun_batsman() {
 		return run_batsman;
 	}
 
-	public void setRun_batsman(Integer run_batsman) {
+	public void setRun_batsman(Long run_batsman) {
 		this.run_batsman = run_batsman;
 	}
 
-	public Integer getRun_extras() {
+	public Long getRun_extras() {
 		return run_extras;
 	}
 
-	public void setRun_extras(Integer run_extras) {
+	public void setRun_extras(Long run_extras) {
 		this.run_extras = run_extras;
 	}
 
-	public Integer getRun_total() {
+	public Long getRun_total() {
 		return run_total;
 	}
 
-	public void setRun_total(Integer run_total) {
+	public void setRun_total(Long run_total) {
 		this.run_total = run_total;
 	}
 
@@ -164,11 +168,11 @@ import javax.persistence.Table;
 		this.deliveryId = deliveryId;
 	}
 
-	public Integer getRun_non_boundary() {
+	public Long getRun_non_boundary() {
 		return run_non_boundary;
 	}
 
-	public void setRun_non_boundary(Integer run_non_boundary) {
+	public void setRun_non_boundary(Long run_non_boundary) {
 		this.run_non_boundary = run_non_boundary;
 	}
 

@@ -63,16 +63,18 @@ public class MatchServiceImpl implements MatchService {
 		infentity.setDates(info.getDates().toString());
 		infentity.setGender(info.getGender());
 		infentity.setMatch_type(info.getMatch_type());
-		infentity.setNeutral_venue(info.getNeutral_venue());
+		if(null != info.getNeutral_venue())
+			infentity.setNeutral_venue(info.getNeutral_venue());
 		
 		// outcome inside inf
 		Outcome outcome = info.getOutcome();
 		//OutcomeEntity outcomeEntity = new OutcomeEntity();
 		
 		
-		
-		infentity.setOut_come_winner(outcome.getWinner());
-		infentity.setOutcome_by(outcome.getBy().toString());
+		if(null != outcome.getWinner())
+			infentity.setOut_come_winner(outcome.getWinner());
+		if(null != outcome.getBy())
+			infentity.setOutcome_by(outcome.getBy().toString());
 		if(null != outcome.getEliminator())
 			infentity.setOutcome_by(outcome.getEliminator());
 		if(null != outcome.getResult())
@@ -96,9 +98,10 @@ public class MatchServiceImpl implements MatchService {
 
 		// inf transfer continued
 		// System.out.print("--------/////////-" +info.getOvers());
-		if(info.getOvers()!=null)
+		if(null !=info.getOvers())
 			infentity.setOvers(info.getOvers());
-		infentity.setPlayer_of_match(info.getPlayer_of_match().toString());
+		if(null != info.getPlayer_of_match())
+			infentity.setPlayer_of_match(info.getPlayer_of_match().toString());
 		infentity.setTeams(info.getTeams().toString());
 		
 		infentity.setUmpires(info.getUmpires().toString());

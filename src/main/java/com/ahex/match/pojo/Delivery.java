@@ -7,7 +7,7 @@ public class Delivery {
 	private String deliveryBall;
 	private String batsman;
 	private String bowler;
-	private Map<String, Integer> extras;
+	private Map<String, Long> extras;
 	private String non_striker;
 	private Run runs;
 	private Wicket wicket;
@@ -39,11 +39,11 @@ public class Delivery {
 		this.bowler = bowler;
 	}
 
-	public Map<String, Integer> getExtras() {
+	public Map<String, Long> getExtras() {
 		return extras;
 	}
 
-	public void setExtras(Map<String, Integer> extras) {
+	public void setExtras(Map<String, Long> extras) {
 		this.extras = extras;
 	}
 
