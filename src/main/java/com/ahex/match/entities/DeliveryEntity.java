@@ -38,6 +38,7 @@ import javax.persistence.Table;
     @JoinColumn(name = "delivery_runs_Id", referencedColumnName = "id")
 	private RunEntity runs;*/
 	
+
 	@Column(nullable = true)
 	private Long run_batsman;
 	@Column(nullable = true)
@@ -52,6 +53,8 @@ import javax.persistence.Table;
 	private WicketEntity wicket;*/
 	
 	private String wicket_kind;
+	
+
 	private String wicket_player_out;
 	private String wicket_fielders;
 

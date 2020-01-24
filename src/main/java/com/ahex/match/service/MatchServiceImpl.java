@@ -3,6 +3,7 @@ package com.ahex.match.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ahex.match.dao.MatchInfoDAO;
+import com.ahex.match.dto.AverageScoreDto;
 import com.ahex.match.dto.FilterDto;
 import com.ahex.match.dto.FinalDto;
 import com.ahex.match.dto.InningInfoDto;
 import com.ahex.match.dto.MatchInfoDto;
+import com.ahex.match.dto.ScoreFilterDto;
 import com.ahex.match.dto.TeamInfoDto;
 import com.ahex.match.entities.DeliveryEntity;
 import com.ahex.match.entities.InfEntity;
@@ -29,6 +32,8 @@ import com.ahex.match.pojo.MAtchDeliveryDto;
 import com.ahex.match.pojo.Meta;
 import com.ahex.match.pojo.Outcome;
 import com.ahex.match.pojo.Wicket;
+import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
+import com.mysql.cj.jdbc.ha.LoadBalancedMySQLConnection;
 
 
 
@@ -40,7 +45,8 @@ public class MatchServiceImpl implements MatchService {
 	MatchInfoDAO matchInfoDao;
 	
 	public void transferdataToEntity(Meta met) {
-
+		
+		Long totalInnngRun=0L;
 		Inf info = met.getInfo();
 		
 
@@ -131,7 +137,7 @@ public class MatchServiceImpl implements MatchService {
 						Delivery delivery = deliveryMap.getValue();
 						DeliveryEntity deliveryEntity = new DeliveryEntity();
 						
-						if(null !=delivery.getDeliveryBall())
+						if(null !=deliveryMap.getKey())
 							deliveryEntity.setDeliveryBall(deliveryMap.getKey().toString());
                
 						if(null !=delivery.getBatsman() )	
@@ -156,7 +162,14 @@ public class MatchServiceImpl implements MatchService {
 								deliveryEntity.setRun_total(delivery.getRuns().getTotal());
 							if(null!=delivery.getRuns().getNon_boundary())
 								deliveryEntity.setRun_non_boundary(delivery.getRuns().getNon_boundary());
+							
+							  totalInnngRun=totalInnngRun+deliveryEntity.getRun_total();
+							  inningEntity.setTotal_run(totalInnngRun);
+							  System.out.println(totalInnngRun);
 						}
+						inningEntity.setTotal_run(totalInnngRun);
+						  System.out.println(totalInnngRun);
+							
 						
 						
 						/*Run run = delivery.getRuns();
@@ -187,6 +200,7 @@ public class MatchServiceImpl implements MatchService {
 					}
 
 				}
+				totalInnngRun=0L;
 				inningEntity.setDeliveries(deliverylist);
 				inninglist.add(inningEntity);
 			}
@@ -334,8 +348,229 @@ public class MatchServiceImpl implements MatchService {
 		finalDto.setResult(teamDtoList);
 		return finalDto;
 	}
+
+	// Average score
+	@Override
+	public FinalDto getAverageScore(String filterType, ScoreFilterDto scoreFilterDto) {
+		FinalDto result = new FinalDto();
+		//List<InfEntity> matchList=matchInfoDao.getMatchData();
+		//System.out.println(matchList);
+	
+		//Average Score By inning
+		if(filterType!=null && filterType.equalsIgnoreCase("ScoreByInning")){
+			//Map<String , Long> matchCountOfVenue=matchInfoDao.getMatchCountOfVenue(scoreFilterDto);
+			
+		}else if(filterType!=null && filterType.equalsIgnoreCase("ScoreOfPerticularTeam")) {
+			AverageScoreDto averageScoreDto=averageCalculation(filterType,scoreFilterDto, null);
+			
+			result.setResult(averageScoreDto);
+		}else if(filterType!=null && filterType.equalsIgnoreCase("ScoreOfPerticularGround")) {
+			AverageScoreDto averageScoreDto=averageCalculation(filterType,scoreFilterDto,null);
+			
+			
+			result.setResult(averageScoreDto);
+			}else { if(scoreFilterDto!=null) {
+				List<AverageScoreDto> listResult= new ArrayList<>();//return
+				Map<String , Long> venuAndMatchCountMap=matchInfoDao.getVenuAndMatchCountMap();
+				//venue
+				for(Map.Entry<String, Long> ground: venuAndMatchCountMap.entrySet()) {
+					
+					AverageScoreDto averageScoreDto=averageCalculation(filterType,scoreFilterDto,ground.getKey());
+					averageScoreDto.setGroundName(ground.getKey());
+					/*AverageScoreDto averageScoreDto =new AverageScoreDto();
+					averageScoreDto.setGroundName(ground.getKey());
+					averageScoreDto.setMatchCount(ground.getValue());
+					
+					Iterator<InfEntity> iterator = ground.;
+					double min = iterator.next();
+					
+					List<InfEntity> listOfMatch = matchInfoDao.listOfMatchByFilterType(ground.getKey(),null);
+					int venueAverage=0;
+					long previousMatchMin =0L;
+					long previousMatchMax=0L;
+					long finalMin=0L;
+					long finalMax=0L;
+					//match
+					for(InfEntity match : listOfMatch) {
+							averageScoreDto.setMatch(match.getTeams());
+							Hibernate.initialize(match.getInnings());
+							int matchAverage=0;
+							long previousInningMin = 0L;
+							long previousInningMax = 0L;
+							long currentmatchMin=0L;
+							long currentmatchMax=0L;
+							//Inning
+							for(InningEntity inning :match.getInnings()) {
+								//min Score
+								if(!inning.getInningName().contains("Super Over")) {
+									long totalRun=inning.getTotal_run();
+									if(previousInningMin ==0) {
+										previousInningMin=totalRun;
+									}
+									if(totalRun < previousInningMin) {
+										previousInningMin=totalRun;
+									}
+								}
+								
+								//max Score
+								if(!inning.getInningName().contains("Super Over")) {
+									long totalRun=inning.getTotal_run();
+									if(previousInningMax ==0) {
+										previousInningMax=totalRun;
+									}
+									if(totalRun > previousInningMax) {
+										previousInningMax=totalRun;
+									}
+								}
+								
+								matchAverage=(int) (matchAverage+inning.getTotal_run());
+								
+							}
+							
+							
+							matchAverage=(matchAverage)/(match.getInnings().size());
+							
+							venueAverage=venueAverage+matchAverage;
+							// min score
+							currentmatchMin=previousInningMin;
+							if(previousMatchMin==0) {
+								previousMatchMin=currentmatchMin;
+							}
+							if(currentmatchMin<previousMatchMin) {
+								previousMatchMin=currentmatchMin;
+							}
+							
+							//max score
+							currentmatchMax=previousInningMax;
+							if(previousMatchMax==0) {
+								previousMatchMax=currentmatchMax;
+							}
+							if(currentmatchMax>previousMatchMax) {
+								previousMatchMax=currentmatchMax;
+							}
+							
+					}
+					finalMin=previousMatchMin;
+					finalMax=previousMatchMax;
+					
+						venueAverage=(venueAverage)/(listOfMatch.size());
+						averageScoreDto.setAverageScore((long) venueAverage);
+						averageScoreDto.setMinScore(finalMin);
+						averageScoreDto.setMaxScore(finalMax);*/
+						listResult.add(averageScoreDto);
+						//System.out.println(listResult);
+										}
+				//FinalDto result = new FinalDto();
+				result.setResult(listResult);
+			}
+		
+		}
+	
+		return result;
+	}
 	
 	
+	public AverageScoreDto averageCalculation(String filterType, ScoreFilterDto scoreFilterDto, String filterValue) {
+
+		AverageScoreDto averageScoreDto =new AverageScoreDto();
+		long matchAverage=0;
+		List<InfEntity> listOfMatch = new ArrayList<>();
+		if(filterType != null ) {
+			if(filterType.equalsIgnoreCase("ScoreOfPerticularGround")) {
+				listOfMatch = matchInfoDao.listOfMatchByFilterType(scoreFilterDto.getGround(),filterType);
+			}else if(filterType.equalsIgnoreCase("ScoreOfPerticularTeam")) {
+				listOfMatch = matchInfoDao.listOfMatchByFilterType(scoreFilterDto.getTeam(),filterType);
+			}else if(filterType.equalsIgnoreCase("ScoreByInning")) {
+				
+			}/*else {
+				listOfMatch = matchInfoDao.listOfMatchByFilterType(filterValue,null);
+			}*/
+		}else {
+			listOfMatch = matchInfoDao.listOfMatchByFilterType(filterValue,null);
+		}
+		
+		
+		//List<InfEntity> listOfMatch = matchInfoDao.listOfMatchByVenue(scoreFilterDto.getGround());
+		//if(!listOfMatch.isEmpty() && listOfMatch.size()!=0) {
+			averageScoreDto.setGroundName(scoreFilterDto.getGround());
+			averageScoreDto.setMatchCount((long) listOfMatch.size());
+			int venueAverage=0;
+			long previousMatchMin =0L;
+			long previousMatchMax=0L;
+			long finalMin=0L;
+			long finalMax=0L;
+			//match
+			for(InfEntity match : listOfMatch) {
+					averageScoreDto.setMatch(match.getTeams());
+					Hibernate.initialize(match.getInnings());
+					//int matchAverage=0;
+					long previousInningMin = 0L;
+					long previousInningMax = 0L;
+					long currentmatchMin=0L;
+					long currentmatchMax=0L;
+					//Inning
+					for(InningEntity inning :match.getInnings()) {
+						//min Score
+						if(!inning.getInningName().contains("Super Over")) {
+							long totalRun=inning.getTotal_run();
+							if(previousInningMin ==0) {
+								previousInningMin=totalRun;
+							}
+							if(totalRun < previousInningMin) {
+								previousInningMin=totalRun;
+							}
+						}
+						
+						//max Score
+						if(!inning.getInningName().contains("Super Over")) {
+							long totalRun=inning.getTotal_run();
+							if(previousInningMax ==0) {
+								previousInningMax=totalRun;
+							}
+							if(totalRun > previousInningMax) {
+								previousInningMax=totalRun;
+							}
+						}
+						
+						matchAverage=(int) (matchAverage+inning.getTotal_run());
+						
+					}
+					
+					
+					matchAverage=(matchAverage)/(match.getInnings().size());
+					
+					venueAverage=(int) (venueAverage+matchAverage);
+					// min score
+					currentmatchMin=previousInningMin;
+					if(previousMatchMin==0) {
+						previousMatchMin=currentmatchMin;
+					}
+					if(currentmatchMin<previousMatchMin) {
+						previousMatchMin=currentmatchMin;
+					}
+					
+					//max score
+					currentmatchMax=previousInningMax;
+					if(previousMatchMax==0) {
+						previousMatchMax=currentmatchMax;
+					}
+					if(currentmatchMax>previousMatchMax) {
+						previousMatchMax=currentmatchMax;
+					}
+					
+			}
+			finalMin=previousMatchMin;
+			finalMax=previousMatchMax;
+			
+				venueAverage=(venueAverage)/(listOfMatch.size());
+				averageScoreDto.setAverageScore((long) venueAverage);
+				averageScoreDto.setMinScore(finalMin);
+				averageScoreDto.setMaxScore(finalMax);
+				//listResult.add(averageScoreDto);
+				System.out.println(finalMax);
+
+		return averageScoreDto;
+	}
 
 	/*@Override
 	public FinalDto getMatchInfo(String filterType, String filterValue, FilterDto filtedto) {

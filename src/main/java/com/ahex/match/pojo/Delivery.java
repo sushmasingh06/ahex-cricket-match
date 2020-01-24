@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class Delivery {
 
-	private String deliveryBall;
+	
 	private String batsman;
 	private String bowler;
 	private Map<String, Long> extras;
@@ -13,15 +13,6 @@ public class Delivery {
 	private Wicket wicket;
 	private Object replacements;
 
-	
-
-	public String getDeliveryBall() {
-		return deliveryBall;
-	}
-
-	public void setDeliveryBall(String deliveryBall) {
-		this.deliveryBall = deliveryBall;
-	}
 
 	public String getBatsman() {
 		return batsman;

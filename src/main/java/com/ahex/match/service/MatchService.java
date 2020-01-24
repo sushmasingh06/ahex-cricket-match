@@ -7,6 +7,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ahex.match.dto.FilterDto;
 import com.ahex.match.dto.FinalDto;
+import com.ahex.match.dto.ScoreFilterDto;
 import com.ahex.match.entities.DeliveryEntity;
 import com.ahex.match.entities.InfEntity;
 import com.ahex.match.entities.InningEntity;
@@ -24,6 +25,8 @@ public interface MatchService {
 	FinalDto getTeamInfo(FilterDto filterdto, String year, String teamName);
 
 	FinalDto getMatchInfo(String filterType, String filterValue, FilterDto filtedto);
+
+	FinalDto getAverageScore(String filterType, ScoreFilterDto scoreFilterDto);
 
 	
 }

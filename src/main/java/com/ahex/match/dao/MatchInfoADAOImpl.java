@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.ahex.match.dto.FilterDto;
+import com.ahex.match.dto.ScoreFilterDto;
 import com.ahex.match.entities.InfEntity;
 
 
@@ -990,4 +994,113 @@ public class MatchInfoADAOImpl implements MatchInfoDAO{
 		return result;
 	}
 
+
+	@Override
+	public List<InfEntity> getMatchData() {
+			 Session session = sessionFactory.openSession(); 
+			 CriteriaBuilder builder = session.getCriteriaBuilder();
+			 CriteriaQuery<InfEntity> criteria = builder.createQuery(InfEntity.class);
+			 criteria.from(InfEntity.class);
+			 List<InfEntity> entityList = session.createQuery(criteria).getResultList();
+		
+		/*Session session = sessionFactory.getCurrentSession();
+		 List<String> matchData = new ArrayList<String>(); 
+		StringBuilder builder = new StringBuilder();
+		builder.append("select distinct(i.team) from InningEntity i");
+		
+		matchData = (List<String>)session.createQuery(builder.toString()).getResultList();
+		
+		return matchData;*/
+		return entityList;
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<String, Long> getVenuAndMatchCountMap() {
+		Session session = sessionFactory.getCurrentSession();
+		Map<String, Long> averageScore = new HashMap<String, Long>();
+		List<Object[]> result = null;
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("select i.venue, count(i)  from InfEntity i  ");
+		/*builder.append(" where ");
+		if(scoreFilterDto !=null) {
+			 if(scoreFilterDto.getTeam()!=null && scoreFilterDto.getGround()!=null && scoreFilterDto.getCity()!=null) {
+				if(scoreFilterDto.getTeam()!=null)
+					builder.append(" i.team like : team ");
+				if(scoreFilterDto.getGround()!=null)
+					builder.append(" i.venue like : venue ");
+				if(scoreFilterDto.getCity() !=null)
+					builder.append(" i.city like : city ");
+			 }
+		}*/
+		builder.append(" group by i.venue ");
+		Query query = session.createQuery(builder.toString());
+		/*if(scoreFilterDto !=null) {
+			 if(scoreFilterDto.getTeam()!=null && scoreFilterDto.getGround()!=null && scoreFilterDto.getCity()!=null) {
+				 if(scoreFilterDto.getTeam()!=null)
+					 query.setParameter("team", "%"+scoreFilterDto.getTeam()+"%");
+				 if(scoreFilterDto.getGround()!=null)
+					 query.setParameter("venue", "%"+scoreFilterDto.getGround()+"%");
+				 if(scoreFilterDto.getCity()!=null)
+					 query.setParameter("city", "%"+scoreFilterDto.getCity()+"%");
+			 }
+		}*/
+		result = (List<Object[]>)query.getResultList();
+		for(Object[] object : result){
+			averageScore.put(object[0].toString(), Long.valueOf(object[1].toString()));
+	}
+		return averageScore;
+	}
+
+
+
+	@Override
+	public List<InfEntity> listOfMatchByFilterType(String filtervalue, String filterType ) {
+		Session session = sessionFactory.getCurrentSession();
+		 List<InfEntity> matchList = new ArrayList<InfEntity>(); 
+		StringBuilder builder = new StringBuilder();
+		builder.append("select i from InfEntity i ");
+		if(filterType != null ) {
+			if(filterType.equals("ScoreOfPerticularGround") ) {
+				builder.append(" where i.venue = :venue ");
+			}else if(filterType.equals("ScoreOfPerticularTeam") /*|| filterType == null*/) {
+				builder.append(" where i.teams like :team ");
+			}
+		}else {
+				builder.append(" where i.venue = :venue ");
+		}
+		
+		Query query=session.createQuery(builder.toString());
+		if(filterType != null ) {
+			if(filterType.equals("ScoreOfPerticularGround")) {
+				query.setParameter("venue", filtervalue);
+			}else if(filterType.equals("ScoreOfPerticularTeam")) {
+				query.setParameter("team", "%"+filtervalue+"%");
+			}
+		}else {
+			query.setParameter("venue", filtervalue);
+		}
+		matchList = query.getResultList();
+		return matchList;
+	}
+
+
+
+	@Override
+	public List<InfEntity> MatchByTeam(String team) {
+		Session session=sessionFactory.getCurrentSession();
+		List<InfEntity> matchList=new ArrayList<InfEntity>();
+		StringBuilder builder= new StringBuilder();
+		builder.append("select i from InfEntity i where i.teams like :team ");
+		Query query= session.createQuery(builder.toString());
+		query.setParameter("team", "%"+team+"%");
+		matchList= query.getResultList();
+		return matchList;
+	}
+
+
+	
 }

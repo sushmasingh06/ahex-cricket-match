@@ -23,6 +23,8 @@ public class InningEntity {
 	private int innings_Id;
 	
 	private String inningName;
+	@Column(nullable = true)
+	private Long total_run;
 	
 	private String team;
 	private String absent_hurt;
@@ -37,6 +39,16 @@ public class InningEntity {
 	
 	public String getTeam() {
 		return team;
+	}
+
+
+	public Long getTotal_run() {
+		return total_run;
+	}
+
+
+	public void setTotal_run(Long total_run) {
+		this.total_run = total_run;
 	}
 
 

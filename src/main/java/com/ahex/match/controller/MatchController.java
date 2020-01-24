@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ahex.match.dto.FilterDto;
 import com.ahex.match.dto.FinalDto;
+import com.ahex.match.dto.ScoreFilterDto;
 import com.ahex.match.pojo.Meta;
 import com.ahex.match.service.MatchService;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -96,6 +97,16 @@ public class MatchController {
 		//public ResponseEntity<FinalDto> getMatchInfo(@RequestParam(required= true) String filterType, @RequestParam(required = true) String filterValue){
 		public ResponseEntity<FinalDto> getMatchInfo(@RequestBody FilterDto filterDto, @RequestParam(required = false) String filterType, @RequestParam(required = false) String filterValue){	
 			FinalDto result = matchService.getMatchInfo(filterType, filterValue,filterDto);
+			
+			return ResponseEntity.ok().body(result);
+			
+		}
+		
+		
+		@PostMapping(value="/score" , produces = { "application/json; charset=UTF-8" }, 
+				consumes = {"application/json; charset=UTF-8" } )
+		public ResponseEntity<FinalDto> getAverageScore(@RequestBody ScoreFilterDto scoreFilterDto, @RequestParam(required = false) String filterType){	
+			FinalDto result = matchService.getAverageScore(filterType , scoreFilterDto);
 			
 			return ResponseEntity.ok().body(result);
 			
